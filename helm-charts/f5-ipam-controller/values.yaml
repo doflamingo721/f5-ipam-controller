@@ -17,14 +17,14 @@ args:
   # provider: "infoblox"
 
   # REQUIRED Params if provider is infoblox
-  infoblox_grid_host: 10.x.x.x
-  infoblox_wapi_version: 2.11.2
-  infoblox_username: username
-  infoblox_password: passsword
+  #infoblox_grid_host: 10.x.x.x
+  #infoblox_wapi_version: 2.11.2
+  #infoblox_username: username
+  #infoblox_password: passsword
   #if you want to set infoblox access credentials through secret uncomment below line.
   #infoblox_login_secret: infoblox-credentials
-  infoblox_labels: '{"Dev":{"cidr":"10.8.128.0/17"}}'
-  infoblox_netview: netview_10_145_77_87
+  #infoblox_labels: '{"Dev":{"cidr":"10.8.128.0/17"}}'
+  #infoblox_netview: netview_10_145_77_87
 
   # REQUIRED Params if provider is f5-ip-provider
   ip_range: '{"test":"172.16.1.1-172.16.1.5", "prod":"172.16.1.50-172.16.1.55"}'
@@ -44,13 +44,16 @@ image:
   repo: f5-ipam-controller
   pullPolicy: Always
   version: 0.1.5
-# affinity:
-#   nodeAffinity:
-#     requiredDuringSchedulingIgnoredDuringExecution:
-#       nodeSelectorTerms:
-#       - matchExpressions:
-#         - key: kubernetes.io/arch
-#           operator: Exists
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - <node-name>
+
 # securityContext:
 #   runAsUser: 1000
 #   runAsGroup: 3000
@@ -72,7 +75,7 @@ pvc:
 
   #name of the  persistent volume claim to be used
   # If not set and create is true, a name is generated using the fullname template
-  name:
+  name: pvc-local
 
   #if create set to false below parameters will be ignored
   storageClassName:
@@ -85,7 +88,7 @@ volume:
 
 # To enable tolerations, uncomment below block and customize key,effect,operator.
 # Below is just an example and different key,value and operators are also supported
-#tolerations:
-#  - key: "node-role.kubernetes.io/master"
-#    effect: "NoSchedule"
-#    operator: "Exists"
+tolerations:
+  - key: "node-role.kubernetes.io/master"
+    effect: "NoSchedule"
+    operator: "Exists"
